@@ -1,0 +1,7 @@
+---
+- name: Configure all FRR routers in Mini-Internet
+  hosts: routers
+  gather_facts: no
+
+  roles:
+    - frr-config

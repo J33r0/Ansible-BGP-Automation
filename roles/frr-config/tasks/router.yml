@@ -1,0 +1,9 @@
+- name: Render FRR config for {{ router.name }} onto AS container
+  raw: |
+    cat > /tmp/{{ router.name }}_router.conf << 'EOF'
+    {{ lookup('template','roles/frr-config/templates/frr.conf.j2') }}
+    EOF
+
+- name: Apply FRR config on {{ router.name }} via vtysh
+  raw: |
+    ssh -tt {{ router_ssh_user }}@{{ router.ssh_ip }} vtysh -f /tmp/{{ router.name }}.conf

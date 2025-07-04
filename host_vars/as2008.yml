@@ -1,6 +1,7 @@
 local_as: 8
 routers:
   - name: lill
+    ssh_ip: 158.8.10.1
     router_id: 8.151.0.1 
     interfaces:
       - name: ext_7_LILL
@@ -39,6 +40,7 @@ routers:
       - 8.154.0.1 
       - 8.155.0.1 
       - 8.156.0.1 
+    route_reflector_client: false
     networks:
       - 8.0.0.0/8
     prefix_lists:
@@ -89,6 +91,7 @@ routers:
               - "local-preference 100"
   
   - name: stra
+    ssh_ip: 158.8.11.1
     router_id: 8.152.0.1
     interfaces:
       - name: ext_5_MARS
@@ -162,6 +165,7 @@ routers:
               - "local-preference 50"
 
   - name: bres
+    ssh_ip: 158.8.14.1
     router_id: 8.155.0.1
     interfaces:
       - name: ext_6_MARS
@@ -235,6 +239,7 @@ routers:
               - "local-preference 50"
 
   - name: toul
+    ssh_ip: 158.8.13.1
     router_id: 8.154.0.1
     interfaces:
       - name: ext_9_PARI
@@ -299,6 +304,7 @@ routers:
               - "local-preference 200"            
             
   - name: mars
+    ssh_ip: 158.8.12.1
     router_id: 8.153.0.1
     interfaces:
       - name: ext_10_PARI
@@ -363,6 +369,7 @@ routers:
               - "local-preference 200" 
 
   - name: pari
+    ssh_ip: 158.8.13.1
     router_id: 8.156.0.1
     interfaces:
       - name: host

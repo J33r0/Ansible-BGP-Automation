@@ -1,0 +1,6 @@
+---
+- name: Configure each router in AS{{ local_as }}
+  include_tasks: router.yml
+  loop: "{{ routers }}"
+  loop_control:
+    loop_var: router
