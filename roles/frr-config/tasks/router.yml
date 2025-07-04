@@ -1,9 +1,23 @@
 - name: Render FRR config for {{ router.name }} onto AS container
   raw: |
-    cat > /tmp/{{ router.name }}_router.conf << 'EOF'
-    {{ lookup('template','roles/frr-config/templates/frr.conf.j2') }}
-    EOF
+      cat > /tmp/{{ router.name }}_router.conf << 'EOF'
+      {{ lookup('template','roles/frr-config/templates/frr.conf.j2') }}
+      EOF
+  args:
+    executable: /bin/bash
+
+- name: Copy {{ router.name }}_router.conf from AS container to router
+  raw: |
+      scp -o StrictHostKeyChecking=no \
+          /tmp/{{ router.name }}_router.conf \
+          {{ router_ssh_user }}@{{ router.ssh_ip }}:/tmp/{{ router.name }}_router.conf
+  args:
+    executable: /bin/bash
 
 - name: Apply FRR config on {{ router.name }} via vtysh
   raw: |
-    ssh -tt {{ router_ssh_user }}@{{ router.ssh_ip }} vtysh -f /tmp/{{ router.name }}.conf
+      ssh -tt -o StrictHostKeyChecking=no \
+        {{ router_ssh_user }}@{{ router.ssh_ip }} \
+        vtysh -f /tmp/{{ router.name }}_router.conf
+  args:
+    executable: /bin/bash

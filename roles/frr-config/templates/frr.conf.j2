@@ -1,19 +1,17 @@
-conf t
-
-{% set lo = router.router_id %}
 hostname {{ router.name | upper }}_router
 !
-interface lo
- ip address {{ lo }}
-{% for iface in router.interfaces if iface.name != 'lo' %}
+{% for iface in router.interfaces %}
 interface {{ iface.name }}
- ip address {{ iface.ip }}
-{% if iface.desc is defined and iface.desc %} description {{ iface.desc }}{% endif %}
+  ip address {{ iface.ip }}
+{% if iface.desc is defined and iface.desc %}
+  description {{ iface.desc }}
+{% endif %}
+  exit
 {% endfor %}
 !
 router ospf
 {% for net in router.ospf_interfaces %}
- network {{ net }} area 0
+  network {{ net }} area 0
 {% endfor %}
 exit
 !
@@ -32,38 +30,52 @@ bgp community-list {{ clist.name }} {{ entry.action }} {{ entry.community }}
 {% for rm in router.route_maps | default([]) %}
 {% for entry in rm.entries %}
 route-map {{ rm.name }} {{ entry.action }} {{ entry.seq | default(10) }}
-{% if entry.match is defined and entry.match %}{% for m in entry.match %} match {{ m }}
-{% endfor %}{% endif %}
-{% if entry.set is defined and entry.set %}{% for s in entry.set %} set {{ s }}
-{% endfor %}{% endif %}
+{% if entry.match is defined and entry.match %}
+{% for m in entry.match %}
+  match {{ m }}
+{% endfor %}
+{% endif %}
+{% if entry.set is defined and entry.set %}
+{% for s in entry.set %}
+  set {{ s }}
+{% endfor %}
+{% endif %}
 {% endfor %}
 {% endfor %}
 !
 router bgp {{ local_as }}
- bgp router-id {{ lo }}
+  bgp router-id {{ router.router_id }}
 {% for neighbor in router.ebgp_neighbors | default([]) %}
- neighbor {{ neighbor.neighbor_ip }} remote-as {{ neighbor.remote_as }}
-{% if neighbor.desc is defined and neighbor.desc %} neighbor {{ neighbor.neighbor_ip }} description {{ neighbor.desc }}{% endif %}
+  neighbor {{ neighbor.neighbor_ip }} remote-as {{ neighbor.remote_as }}
+{% if neighbor.desc is defined and neighbor.desc %}
+  neighbor {{ neighbor.neighbor_ip }} description {{ neighbor.desc }}
+{% endif %}
 {% endfor %}
 {% for neighbor in router.ibgp_neighbors | default([]) %}
- neighbor {{ neighbor }} remote-as {{ local_as }}
- neighbor {{ neighbor }} update-source lo
-{% if router.route_reflector_client %} neighbor {{ neighbor }} route-reflector-client{% endif %}
+  neighbor {{ neighbor }} remote-as {{ local_as }}
+  neighbor {{ neighbor }} update-source lo
+{% if router.route_reflector_client %}
+  neighbor {{ neighbor }} route-reflector-client
+{% endif %}
 {% endfor %}
 !
- address-family ipv4 unicast
+address-family ipv4 unicast
 {% for net in router.networks %}
   network {{ net }}
 {% endfor %}
 {% for neighbor in router.ebgp_neighbors | default([]) %}
   neighbor {{ neighbor.neighbor_ip }} activate
-{% if neighbor.import_rm %}  neighbor {{ neighbor.neighbor_ip }} route-map {{ neighbor.import_rm }} in{% endif %}
-{% if neighbor.export_rm %}  neighbor {{ neighbor.neighbor_ip }} route-map {{ neighbor.export_rm }} out{% endif %}
+{% if neighbor.import_rm %}
+  neighbor {{ neighbor.neighbor_ip }} route-map {{ neighbor.import_rm }} in
+{% endif %}
+{% if neighbor.export_rm %}
+  neighbor {{ neighbor.neighbor_ip }} route-map {{ neighbor.export_rm }} out
+{% endif %}
 {% endfor %}
 {% for neighbor in router.ibgp_neighbors | default([]) %}
   neighbor {{ neighbor }} activate
   neighbor {{ neighbor }} next-hop-self
 {% endfor %}
- exit-address-family
+exit-address-family
 exit
 end
