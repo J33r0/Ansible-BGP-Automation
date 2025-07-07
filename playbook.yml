@@ -1,6 +1,6 @@
 ---
 - name: Configure all FRR routers in Mini-Internet
-  hosts: routers
+  hosts: transit_AS
   gather_facts: no
 
   roles:
