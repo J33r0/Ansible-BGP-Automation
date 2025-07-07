@@ -1,5 +1,9 @@
 hostname {{ router.name | upper }}_router
 !
+{% for net in router.networks %}
+  ip route {{ net }} Null0
+{% endfor %}
+!
 {% for iface in router.interfaces %}
 interface {{ iface.name }}
   ip address {{ iface.ip }}
@@ -54,7 +58,7 @@ router bgp {{ local_as }}
 {% for neighbor in router.ibgp_neighbors | default([]) %}
   neighbor {{ neighbor }} remote-as {{ local_as }}
   neighbor {{ neighbor }} update-source lo
-{% if router.route_reflector_client %}
+{% if router.name == "lill" %}
   neighbor {{ neighbor }} route-reflector-client
 {% endif %}
 {% endfor %}
