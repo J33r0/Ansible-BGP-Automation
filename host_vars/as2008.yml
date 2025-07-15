@@ -2,7 +2,7 @@ local_as: 8
 routers:
   - name: lill
     ssh_ip: 158.8.10.1
-    router_id: 8.151.0.1 
+    router_id: 8.151.0.1
     interfaces:
       - name: ext_7_LILL
         ip: 179.7.8.8/24
@@ -35,11 +35,11 @@ routers:
         import_rm: IN-PEER
         export_rm: OUT-IXP
     ibgp_neighbors:
-      - 8.152.0.1 
-      - 8.153.0.1 
-      - 8.154.0.1 
-      - 8.155.0.1 
-      - 8.156.0.1 
+      - 8.152.0.1
+      - 8.153.0.1
+      - 8.154.0.1
+      - 8.155.0.1
+      - 8.156.0.1
     networks:
       - 8.0.0.0/8
     prefix_lists:
@@ -64,31 +64,35 @@ routers:
       - name: OUT-PEER
         entries:
           - seq: 10
-            action: "permit"
+            action: permit
             match:
-              - "community 1"
+              - ip address prefix-list AS23-AGG
           - seq: 20
-            action: "permit"
+            action: permit
             match:
-              - "ip address prefix-list AS8-AGG"
+              - community 1
       - name: OUT-IXP
         entries:
           - seq: 10
-            action: "permit"
-            set:
-              - "community 8:21 8:23 8:25 8:27 8:29"
-          - seq: 20
-            action: "permit"
+            action: permit
             match:
-              - "ip address prefix-list AS8-AGG"
+              - ip address prefix-list AS23-AGG
+            set:
+              - community 82:2 82:4 82:6 82:8 82:10
+          - seq: 20
+            action: permit
+            match:
+              - community 1
+            set:
+              - community 82:2 82:4 82:6 82:8 82:10
       - name: IN-PEER
         entries:
           - seq: 10
-            action: "permit"
+            action: permit
             set:
-              - "community 8:200"
-              - "local-preference 100"
-  
+              - community 23:200
+              - local-preference 100
+
   - name: stra
     ssh_ip: 158.8.11.1
     router_id: 8.152.0.1
@@ -147,20 +151,20 @@ routers:
       - name: OUT-PROV
         entries:
           - seq: 10
-            action: "permit"
+            action: permit
             match:
-              - "community 1"
+              - ip address prefix-list AS23-AGG
           - seq: 20
-            action: "permit"
+            action: permit
             match:
-              - "ip address prefix-list AS8-AGG"
+              - community 1
       - name: IN-PROV
         entries:
           - seq: 10
-            action: "permit"
+            action: permit
             set:
-              - "community 8:300"
-              - "local-preference 50"
+              - community 23:300
+              - local-preference 50
 
   - name: bres
     ssh_ip: 158.8.14.1
@@ -220,20 +224,20 @@ routers:
       - name: OUT-PROV
         entries:
           - seq: 10
-            action: "permit"
+            action: permit
             match:
-              - "community 1"
+              - ip address prefix-list AS23-AGG
           - seq: 20
-            action: "permit"
+            action: permit
             match:
-              - "ip address prefix-list AS8-AGG"
+              - community 1
       - name: IN-PROV
         entries:
           - seq: 10
-            action: "permit"
+            action: permit
             set:
-              - "community 8:300"
-              - "local-preference 50"
+              - community 23:300
+              - local-preference 50
 
   - name: toul
     ssh_ip: 158.8.13.1
@@ -283,22 +287,28 @@ routers:
           - action: "permit"
             community: "8:200"
       - name: 3
-        entries:    
+        entries:
           - action: "permit"
             community: "8:300"
     route_maps:
       - name: OUT-CUST
         entries:
           - seq: 10
-            action: "permit"
+            action: permit
+            match:
+              - ip address prefix-list AS23-AGG
+          - seq: 20
+            action: permit
+            match:
+              - community 2
       - name: IN-CUST
         entries:
           - seq: 10
-            action: "permit"
+            action: permit
             set:
-              - "community 8:100"
-              - "local-preference 200"            
-            
+              - community 23:100
+              - local-preference 200
+
   - name: mars
     ssh_ip: 158.8.12.1
     router_id: 8.153.0.1
@@ -347,21 +357,27 @@ routers:
           - action: "permit"
             community: "8:200"
       - name: 3
-        entries:    
+        entries:
           - action: "permit"
             community: "8:300"
     route_maps:
       - name: OUT-CUST
         entries:
           - seq: 10
-            action: "permit"
+            action: permit
+            match:
+              - ip address prefix-list AS23-AGG
+          - seq: 20
+            action: permit
+            match:
+              - community 2
       - name: IN-CUST
         entries:
           - seq: 10
-            action: "permit"
+            action: permit
             set:
-              - "community 8:100"
-              - "local-preference 200" 
+              - community 23:100
+              - local-preference 200
 
   - name: pari
     ssh_ip: 158.8.15.1
