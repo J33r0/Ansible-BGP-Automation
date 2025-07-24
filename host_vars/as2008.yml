@@ -66,7 +66,7 @@ routers:
           - seq: 10
             action: permit
             match:
-              - ip address prefix-list AS23-AGG
+              - ip address prefix-list AS8-AGG
           - seq: 20
             action: permit
             match:
@@ -76,21 +76,21 @@ routers:
           - seq: 10
             action: permit
             match:
-              - ip address prefix-list AS23-AGG
+              - ip address prefix-list AS8-AGG
             set:
-              - community 82:2 82:4 82:6 82:8 82:10
+              - community 82:21 82:23 82:25 82:27 82:29
           - seq: 20
             action: permit
             match:
               - community 1
             set:
-              - community 82:2 82:4 82:6 82:8 82:10
+              - community 82:21 82:23 82:25 82:27 82:29
       - name: IN-PEER
         entries:
           - seq: 10
             action: permit
             set:
-              - community 23:200
+              - community 8:200
               - local-preference 100
 
   - name: stra
@@ -153,7 +153,7 @@ routers:
           - seq: 10
             action: permit
             match:
-              - ip address prefix-list AS23-AGG
+              - ip address prefix-list AS8-AGG
           - seq: 20
             action: permit
             match:
@@ -163,7 +163,7 @@ routers:
           - seq: 10
             action: permit
             set:
-              - community 23:300
+              - community 8:300
               - local-preference 50
 
   - name: bres
@@ -226,7 +226,7 @@ routers:
           - seq: 10
             action: permit
             match:
-              - ip address prefix-list AS23-AGG
+              - ip address prefix-list AS8-AGG
           - seq: 20
             action: permit
             match:
@@ -236,7 +236,7 @@ routers:
           - seq: 10
             action: permit
             set:
-              - community 23:300
+              - community 8:300
               - local-preference 50
 
   - name: toul
@@ -296,7 +296,7 @@ routers:
           - seq: 10
             action: permit
             match:
-              - ip address prefix-list AS23-AGG
+              - ip address prefix-list AS8-AGG
           - seq: 20
             action: permit
             match:
@@ -306,7 +306,7 @@ routers:
           - seq: 10
             action: permit
             set:
-              - community 23:100
+              - community 8:100
               - local-preference 200
 
   - name: mars
@@ -366,7 +366,7 @@ routers:
           - seq: 10
             action: permit
             match:
-              - ip address prefix-list AS23-AGG
+              - ip address prefix-list AS8-AGG
           - seq: 20
             action: permit
             match:
@@ -376,7 +376,7 @@ routers:
           - seq: 10
             action: permit
             set:
-              - community 23:100
+              - community 8:100
               - local-preference 200
 
   - name: pari
