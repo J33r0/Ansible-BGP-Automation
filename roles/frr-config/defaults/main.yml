@@ -1,9 +1,5 @@
----
-# Where to place the rendered FRR config on each AS container
 vtysh_config_path: /tmp/frr.conf
 
-# SSH options when jumping from AS container → router
 nested_ssh_opts: "-o StrictHostKeyChecking=no"
 
-# User to SSH into on the router itself
 router_ssh_user: root

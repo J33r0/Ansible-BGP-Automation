@@ -62,24 +62,23 @@ router bgp {{ local_as }}
   neighbor {{ neighbor }} route-reflector-client
 {% endif %}
 {% endfor %}
-!
-address-family ipv4 unicast
+  address-family ipv4 unicast
 {% for net in router.networks %}
-  network {{ net }}
+    network {{ net }}
 {% endfor %}
 {% for neighbor in router.ebgp_neighbors | default([]) %}
-  neighbor {{ neighbor.neighbor_ip }} activate
+    neighbor {{ neighbor.neighbor_ip }} activate
 {% if neighbor.import_rm %}
-  neighbor {{ neighbor.neighbor_ip }} route-map {{ neighbor.import_rm }} in
+    neighbor {{ neighbor.neighbor_ip }} route-map {{ neighbor.import_rm }} in
 {% endif %}
 {% if neighbor.export_rm %}
-  neighbor {{ neighbor.neighbor_ip }} route-map {{ neighbor.export_rm }} out
+    neighbor {{ neighbor.neighbor_ip }} route-map {{ neighbor.export_rm }} out
 {% endif %}
 {% endfor %}
 {% for neighbor in router.ibgp_neighbors | default([]) %}
-  neighbor {{ neighbor }} activate
-  neighbor {{ neighbor }} next-hop-self
+    neighbor {{ neighbor }} activate
+    neighbor {{ neighbor }} next-hop-self
 {% endfor %}
-exit-address-family
+  exit-address-family
 exit
-end
+ end

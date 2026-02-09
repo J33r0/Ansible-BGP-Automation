@@ -1,0 +1,424 @@
+local_as: 10
+routers:
+  - name: lill
+    ssh_ip: 158.10.10.1
+    router_id: 10.151.0.1
+    interfaces:
+      - name: ext_9_LILL
+        ip: 179.9.10.10/24
+        desc: "Link to AS9"
+      - name: ixp_82
+        ip: 180.82.0.10/24
+        desc: "IXP 82"
+      - name: host
+        ip: 10.101.0.1/24
+      - name: lo
+        ip: 10.151.0.1/32
+      - name: port_STRA
+        ip: 10.0.1.1/24
+      - name: port_BRES
+        ip: 10.0.2.1/24
+    ospf_interfaces:
+      - 10.101.0.0/24
+      - 10.0.2.0/24
+      - 10.0.1.0/24
+      - 10.151.0.1/32
+    ebgp_neighbors:
+      - neighbor_ip: 179.9.10.9
+        remote_as: 9
+        desc: "eBGP to AS9"
+        import_rm: IN-PEER
+        export_rm: OUT-PEER
+      - neighbor_ip: 180.82.0.82
+        remote_as: 82
+        desc: "eBGP to IXP 82"
+        import_rm: IN-IXP
+        export_rm: OUT-IXP
+    ibgp_neighbors:
+      - 10.152.0.1
+      - 10.153.0.1
+      - 10.154.0.1
+      - 10.155.0.1
+      - 10.156.0.1
+    networks:
+      - 10.0.0.0/8
+    prefix_lists:
+      - name: AS10-AGG
+        entries:
+          - action: "permit"
+            prefix: "10.0.0.0/8"
+      - name: IXP82-IN
+        entries:
+          - action: "permit"
+            prefix: "21.0.0.0/8"
+          - action: "permit"
+            prefix: "29.0.0.0/8"
+          - action: "permit"
+            prefix: "31.0.0.0/8"
+          - action: "permit"
+            prefix: "32.0.0.0/8"
+    community_lists:
+      - name: 1
+        entries:
+          - action: "permit"
+            community: "10:100"
+      - name: 2
+        entries:
+          - action: "permit"
+            community: "10:200"
+      - name: 3
+        entries:
+          - action: "permit"
+            community: "10:300"
+    route_maps:
+      - name: OUT-PEER
+        entries:
+          - seq: 10
+            action: permit
+            match:
+              - ip address prefix-list AS10-AGG
+          - seq: 20
+            action: permit
+            match:
+              - community 1
+      - name: OUT-IXP
+        entries:
+          - seq: 10
+            action: permit
+            match:
+              - ip address prefix-list AS10-AGG
+            set:
+              - community 82:21 82:23 82:25 82:27 82:29
+          - seq: 20
+            action: permit
+            match:
+              - community 1
+            set:
+              - community 82:21 82:23 82:25 82:27 82:29
+      - name: IN-IXP
+        entries:
+          - seq: 10
+            action: permit
+            match:
+              - ip address prefix-list IXP82-IN
+      - name: IN-PEER
+        entries:
+          - seq: 10
+            action: permit
+            set:
+              - community 10:200
+              - local-preference 100
+
+  - name: stra
+    ssh_ip: 158.10.11.1
+    router_id: 10.152.0.1
+    interfaces:
+      - name: ext_7_MARS
+        ip: 179.7.10.10/24
+        desc: "eBGP to AS7"
+      - name: host
+        ip: 10.102.0.1/24
+      - name: lo
+        ip: 10.152.0.1/32
+      - name: port_LILL
+        ip: 10.0.1.2/24
+      - name: port_BRES
+        ip: 10.0.3.1/24
+      - name: port_PARI
+        ip: 10.0.4.1/24
+      - name: port_MARS
+        ip: 10.0.5.1/24
+    ospf_interfaces:
+      - 10.102.0.0/24
+      - 10.0.1.0/24
+      - 10.0.3.0/24
+      - 10.0.4.0/24
+      - 10.0.5.0/24
+      - 10.152.0.1/32
+    ebgp_neighbors:
+      - neighbor_ip: 179.7.10.7
+        remote_as: 7
+        desc: "eBGP to AS7"
+        import_rm: IN-PROV
+        export_rm: OUT-PROV
+    ibgp_neighbors:
+      - 10.151.0.1
+    networks:
+      - 10.0.0.0/8
+    prefix_lists:
+      - name: AS10-AGG
+        entries:
+          - action: "permit"
+            prefix: "10.0.0.0/8"
+    community_lists:
+      - name: 1
+        entries:
+          - action: "permit"
+            community: "10:100"
+      - name: 2
+        entries:
+          - action: "permit"
+            community: "10:200"
+      - name: 3
+        entries:
+          - action: "permit"
+            community: "10:300"
+    route_maps:
+      - name: OUT-PROV
+        entries:
+          - seq: 10
+            action: permit
+            match:
+              - ip address prefix-list AS10-AGG
+          - seq: 20
+            action: permit
+            match:
+              - community 1
+      - name: IN-PROV
+        entries:
+          - seq: 10
+            action: permit
+            set:
+              - community 10:300
+              - local-preference 50
+
+  - name: bres
+    ssh_ip: 158.10.14.1
+    router_id: 10.155.0.1
+    interfaces:
+      - name: ext_8_MARS
+        ip: 179.8.10.10/24
+        desc: "eBGP to AS6"
+      - name: host
+        ip: 10.105.0.1/24
+      - name: lo
+        ip: 10.155.0.1/32
+      - name: port_LILL
+        ip: 10.0.2.2/24
+      - name: port_STRA
+        ip: 10.0.3.2/24
+      - name: port_TOUL
+        ip: 10.0.9.2/24
+      - name: port_PARI
+        ip: 10.0.10.1/24
+    ospf_interfaces:
+      - 10.105.0.0/24
+      - 10.0.1.0/24
+      - 10.0.3.0/24
+      - 10.0.9.0/24
+      - 10.0.10.0/24
+      - 10.155.0.1/32
+    ebgp_neighbors:
+      - neighbor_ip: 179.8.10.8
+        remote_as: 8
+        desc: "eBGP to AS8"
+        import_rm: IN-PROV
+        export_rm: OUT-PROV
+    ibgp_neighbors:
+      - 10.151.0.1
+    networks:
+      - 10.0.0.0/8
+    prefix_lists:
+      - name: AS10-AGG
+        entries:
+          - action: "permit"
+            prefix: "10.0.0.0/8"
+    community_lists:
+      - name: 1
+        entries:
+          - action: "permit"
+            community: "10:100"
+      - name: 2
+        entries:
+          - action: "permit"
+            community: "10:200"
+      - name: 3
+        entries:
+          - action: "permit"
+            community: "10:300"
+    route_maps:
+      - name: OUT-PROV
+        entries:
+          - seq: 10
+            action: permit
+            match:
+              - ip address prefix-list AS10-AGG
+          - seq: 20
+            action: permit
+            match:
+              - community 1
+      - name: IN-PROV
+        entries:
+          - seq: 10
+            action: permit
+            set:
+              - community 10:300
+              - local-preference 50
+
+  - name: toul
+    ssh_ip: 158.10.13.1
+    router_id: 10.154.0.1
+    interfaces:
+      - name: ext_11_PARI
+        ip: 179.10.11.10/24
+        desc: "eBGP to AS11"
+      - name: host
+        ip: 10.104.0.1/24
+      - name: lo
+        ip: 10.154.0.1/32
+      - name: port_MARS
+        ip: 10.0.7.2/24
+      - name: port_PARI
+        ip: 10.0.8.1/24
+      - name: port_BRES
+        ip: 10.0.9.1/24
+    ospf_interfaces:
+      - 10.104.0.0/24
+      - 10.0.7.0/24
+      - 10.0.8.0/24
+      - 10.0.9.0/24
+      - 10.154.0.1/32
+    ebgp_neighbors:
+      - neighbor_ip: 179.10.11.11
+        remote_as: 11
+        desc: "eBGP to AS11"
+        import_rm: IN-CUST
+        export_rm: OUT-PROV
+    ibgp_neighbors:
+      - 10.151.0.1
+    networks:
+      - 10.0.0.0/8
+    prefix_lists:
+      - name: AS8-AGG
+        entries:
+          - action: "permit"
+            prefix: "10.0.0.0/8"
+    community_lists:
+      - name: 1
+        entries:
+          - action: "permit"
+            community: "10:100"
+      - name: 2
+        entries:
+          - action: "permit"
+            community: "10:200"
+      - name: 3
+        entries:
+          - action: "permit"
+            community: "10:300"
+    route_maps:
+      - name: OUT-CUST
+        entries:
+          - seq: 10
+            action: permit
+            match:
+              - ip address prefix-list AS10-AGG
+          - seq: 20
+            action: permit
+            match:
+              - community 2
+      - name: IN-CUST
+        entries:
+          - seq: 10
+            action: permit
+            set:
+              - community 10:100
+              - local-preference 200
+
+  - name: mars
+    ssh_ip: 158.10.12.1
+    router_id: 10.153.0.1
+    interfaces:
+      - name: ext_12_PARI
+        ip: 179.10.12.10/24
+        desc: "eBGP to AS12"
+      - name: host
+        ip: 10.103.0.1/24
+      - name: lo
+        ip: 10.153.0.1/32
+      - name: port_STRA
+        ip: 10.0.5.2/24
+      - name: port_PARI
+        ip: 10.0.6.1/24
+      - name: port_TOUL
+        ip: 10.0.7.1/24
+    ospf_interfaces:
+      - 10.103.0.0/24
+      - 10.0.5.0/24
+      - 10.0.6.0/24
+      - 10.0.7.0/24
+      - 10.153.0.1/32
+    ebgp_neighbors:
+      - neighbor_ip: 179.10.12.12
+        remote_as: 12
+        desc: "eBGP to AS12"
+        import_rm: IN-CUST
+        export_rm: OUT-CUST
+    ibgp_neighbors:
+      - 10.151.0.1
+    networks:
+      - 10.0.0.0/8
+    prefix_lists:
+      - name: AS10-AGG
+        entries:
+          - action: "permit"
+            prefix: "10.0.0.0/8"
+    community_lists:
+      - name: 1
+        entries:
+          - action: "permit"
+            community: "10:100"
+      - name: 2
+        entries:
+          - action: "permit"
+            community: "10:200"
+      - name: 3
+        entries:
+          - action: "permit"
+            community: "10:300"
+    route_maps:
+      - name: OUT-CUST
+        entries:
+          - seq: 10
+            action: permit
+            match:
+              - ip address prefix-list AS10-AGG
+          - seq: 20
+            action: permit
+            match:
+              - community 2
+      - name: IN-CUST
+        entries:
+          - seq: 10
+            action: permit
+            set:
+              - community 10:100
+              - local-preference 200
+
+  - name: pari
+    ssh_ip: 158.10.15.1
+    router_id: 10.156.0.1
+    interfaces:
+      - name: host
+        ip: 10.106.0.1/24
+      - name: lo
+        ip: 10.156.0.1/32
+      - name: port_STRA
+        ip: 10.0.4.2/24
+      - name: port_MARS
+        ip: 10.0.6.1/24
+      - name: port_BRES
+        ip: 10.0.10.1/24
+      - name: port_TOUL
+        ip: 10.0.8.1/24
+    ospf_interfaces:
+      - 10.106.0.0/24
+      - 10.0.4.0/24
+      - 10.0.6.0/24
+      - 10.0.8.0/24
+      - 10.0.10.0/24
+      - 10.156.0.1/32
+    ibgp_neighbors:
+      - 10.151.0.1
+    networks:
+      - 10.0.0.0/8

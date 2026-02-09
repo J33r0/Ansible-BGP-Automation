@@ -1,5 +1,2 @@
----
-# SSH into every AS container as root, disable host‐key checking,
-# forward your SSH agent so the container can SSH into its routers.
 ansible_user: root
 ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
