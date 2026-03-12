@@ -321,6 +321,14 @@ routers:
             action: permit
             match:
               - community 1
+          - seq: 30
+            action: permit
+            match:
+              - community 2
+          - seq: 40
+            action: permit
+            match:
+              - community 3 
       - name: IN-CUST
         entries:
           - seq: 10
@@ -391,6 +399,14 @@ routers:
             action: permit
             match:
               - community 1
+          - seq: 30
+            action: permit
+            match:
+              - community 2
+          - seq: 40
+            action: permit
+            match:
+              - community 3
       - name: IN-CUST
         entries:
           - seq: 10
