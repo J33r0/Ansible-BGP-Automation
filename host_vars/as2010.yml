@@ -52,11 +52,15 @@ routers:
           - action: "permit"
             prefix: "21.0.0.0/8"
           - action: "permit"
+            prefix: "23.0.0.0/8"
+          - action: "permit"
+            prefix: "25.0.0.0/8"
+          - action: "permit"
+            prefix: "27.0.0.0/8"
+          - action: "permit"
             prefix: "29.0.0.0/8"
           - action: "permit"
             prefix: "31.0.0.0/8"
-          - action: "permit"
-            prefix: "32.0.0.0/8"
     community_lists:
       - name: 1
         entries:
@@ -283,13 +287,13 @@ routers:
         remote_as: 11
         desc: "eBGP to AS11"
         import_rm: IN-CUST
-        export_rm: OUT-PROV
+        export_rm: OUT-CUST
     ibgp_neighbors:
       - 10.151.0.1
     networks:
       - 10.0.0.0/8
     prefix_lists:
-      - name: AS8-AGG
+      - name: AS10-AGG
         entries:
           - action: "permit"
             prefix: "10.0.0.0/8"
